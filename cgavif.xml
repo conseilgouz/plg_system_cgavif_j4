@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<extension type="plugin" version="4.0" group="system" method="upgrade">
+    <name>System - CG AVIF</name>
+    <creationDate>2024-10-05</creationDate>
+    <author>ConseilGouz</author>
+	<copyright>Copyright (C) 2024 ConseilGouz. All rights reserved.</copyright>
+	<license>GNU/GPL</license>
+    <authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
+    <authorUrl>https://www.conseilgouz.com</authorUrl>
+    <version>1.0.0</version>
+    <description>PLG_SYSTEM_CGAVIF_DESCRIPTION</description>
+    <namespace path="src">Conseilgouz\Plugin\System\Cgavif</namespace>
+    <scriptfile>script.cgavif.php</scriptfile>
+    <files>
+		<folder plugin="cgavif">services</folder>
+		<folder>src</folder>
+        <folder>layouts</folder>
+        <filename>filters.xml</filename>
+        <filename>index.html</filename>
+    </files>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_system_cgavif.sys.ini</language>
+		<language tag="fr-FR">language/fr-FR/plg_system_cgavif.sys.ini</language>
+	</languages>
+	<media destination="plg_system_cgavif" folder="media">
+		<folder>js</folder>
+        <folder>css</folder>
+		<folder>_cache</folder>
+		<filename>index.html</filename>
+	</media>
+    <config>
+        <fields name="params">
+            <fieldset name="basic" addfieldprefix="Conseilgouz\Plugin\System\Cgavif\Field">
+				<field name="version" type="version"  margintop="-3em"  extension="cgavif" />
+                <field name="avif_support" type="avifsupport"/>
+				<field name="filters" type="subform" icon="list"
+                label="PLG_SYSTEM_CGAVIF_FILTERS" 
+                multiple="true" default=""
+                formsource="plugins/system/cgavif/filters.xml"
+                />
+                <field name="excludedMenus" type="cgmenuitems"
+                        label="PLG_SYSTEM_CGAVIF_EXCLUDED_MENUS" description="PLG_SYSTEM_CGAVIF_EXCLUDED_MENUS_DESC"
+                        multiple="true" layout="joomla.form.field.list-fancy-select" filter="intarray"
+                />
+                <field name="storage" type="radio" default="media" 
+                    label="PLG_SYSTEM_CGAVIF_STORAGE" description="PLG_SYSTEM_CGAVIF_STORAGE_DESC"
+                       class="btn-group btn-group-yesno sixty left">
+                    <option value="same">PLG_SYSTEM_CGAVIF_STORAGE_SAME</option>
+                    <option value="media">PLG_SYSTEM_CGAVIF_STORAGE_MEDIA</option>
+                </field>
+                <field name="avif_destroy" type="avifdestroy"/>
+                <field name="debug" type="radio" default="0" 
+                    label="PLG_SYSTEM_CGAVIF_DEBUG" description="PLG_SYSTEM_CGAVIF_DEBUG_DESC"
+                       class="btn-group btn-group-yesno clear">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="mode" type="hidden" default="" label="PLG_SYSTEM_CGAVIF_MODE" >
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+	<changelogurl>https://raw.githubusercontent.com/conseilgouz/plg_system_cgavif_j4/master/plg_system_cgavif_changelog.xml</changelogurl>
+    <updateservers>
+        <server type="extension" name="cgavif">https://raw.githubusercontent.com/conseilgouz/updates_github/master/plg_system_cgavif_update.xml</server>
+    </updateservers>
+</extension>
