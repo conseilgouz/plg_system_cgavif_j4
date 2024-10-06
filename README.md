@@ -16,11 +16,12 @@ On your pages, avif images will be displayed, replacing original images.
 
 To access CG AVIF plugin, in your administration, click on Plugins button and enter avif in filter options : 
 
-![cg_avif_plugin](https://github.com/conseilgouz/plg_system_cgwebp_j4/assets/19435246/d9e7a39a-b94d-4fad-a1b1-e677f559de80)
+![avif](https://github.com/user-attachments/assets/0f5af5e5-a8cc-4fa9-96e8-0ef4872c3f4d)
+
 
 Click on CG Avif and you'll have access to its parameters:
 
-![cg_avif_1 1 2](https://github.com/conseilgouz/plg_system_cgwebp_j4/assets/19435246/cd2a6ee4-acb8-4d39-a6f8-bccfd8b139bc)
+![avif_1 0 0](https://github.com/user-attachments/assets/55153384-143d-4e79-bc43-c3f7c242fd1e)
 
 Click on <b>Check AVIF support</b> button to make sure your server handles AVIF conversion.
 
