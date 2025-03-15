@@ -3,6 +3,18 @@
 		<element>plg_system_cgavif</element>
 		<type>plugin</type>
 		<group>system</group>
+		<version>1.1.1</version>
+        <note>
+            <item>Update : 15/03/2025</item>
+        </note>
+        <fix>
+            <item>Missing $forceurl definition</item>
+        </fix>
+	</changelog>
+	<changelog>
+		<element>plg_system_cgavif</element>
+		<type>plugin</type>
+		<group>system</group>
 		<version>1.1.0</version>
         <note>
             <item>Update : 15/03/2025</item>

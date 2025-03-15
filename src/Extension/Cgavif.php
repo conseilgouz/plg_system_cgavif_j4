@@ -25,6 +25,7 @@ final class Cgavif extends CMSPlugin implements SubscriberInterface
 {
     protected $_avifs;
     protected $debugData;
+    protected $forceurl = false;
     public static function getSubscribedEvents(): array
     {
         return [
