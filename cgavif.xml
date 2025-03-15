@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <extension type="plugin" version="4.0" group="system" method="upgrade">
     <name>System - CG AVIF</name>
-    <creationDate>2024-10-05</creationDate>
+    <creationDate>2025-03-15</creationDate>
     <author>ConseilGouz</author>
-	<copyright>Copyright (C) 2024 ConseilGouz. All rights reserved.</copyright>
+	<copyright>Copyright (C) 2025 ConseilGouz. All rights reserved.</copyright>
 	<license>GNU/GPL</license>
     <authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
     <authorUrl>https://www.conseilgouz.com</authorUrl>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <description>PLG_SYSTEM_CGAVIF_DESCRIPTION</description>
     <namespace path="src">Conseilgouz\Plugin\System\Cgavif</namespace>
     <scriptfile>script.cgavif.php</scriptfile>

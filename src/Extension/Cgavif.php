@@ -14,6 +14,8 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Session\Session;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
@@ -34,9 +36,6 @@ final class Cgavif extends CMSPlugin implements SubscriberInterface
     public function onAfterRender()
     {
         $app = Factory::getApplication();
-        $user = $app->getIdentity();
-
-
         if ($app->getDocument()->getType() !== 'html' || !$app->isClient('site')) {
             return;
         }
@@ -60,7 +59,7 @@ final class Cgavif extends CMSPlugin implements SubscriberInterface
 
         $this->debugData = array();
 
-        if(is_countable($filters) && count($filters)) {
+        if (is_countable($filters) && count($filters)) {
             foreach ($filters as $filter) {
                 if (is_string($filter)) {
                     $filter = json_decode($filter);
@@ -76,7 +75,7 @@ final class Cgavif extends CMSPlugin implements SubscriberInterface
                 }
             }
         }
-        if($this->params->get('debug')) {
+        if ($this->params->get('debug')) {
             $sHtml .= '<pre>' . print_r($this->debugData, true) . '</pre>';
         }
         $app->setBody($sHtml);
@@ -101,6 +100,8 @@ final class Cgavif extends CMSPlugin implements SubscriberInterface
         }
 
         if(count($extensions)) {
+            $this->checkTemplate(); // check Helix Template
+
             $regexPath = str_replace("/", "\/", $onefilter->directory);
             $sHtml = preg_replace_callback(
                 '/' . $regexPath . '\/.*?(' . implode('|', $extensions) . ')(?=[\'"?#\)])|#joomlaImage.*?(' . implode('|', $extensions) . ').+?(?=\")\b/',
@@ -134,7 +135,7 @@ final class Cgavif extends CMSPlugin implements SubscriberInterface
         $excludedMenuItems = $this->params->get('excludedMenus', array(), 'array');
         $activeMenu = $app->getMenu()->getActive();
 
-        if(isset($activeMenu->id)) {
+        if (isset($activeMenu->id)) {
             return in_array($activeMenu->id, $excludedMenuItems);
         } else {
             return false;
@@ -146,37 +147,82 @@ final class Cgavif extends CMSPlugin implements SubscriberInterface
         $exist = false;
         foreach ($excluded as $exclude) {
 
-            if(strpos($image, $exclude) !== false) {
+            if (strpos($image, $exclude) !== false) {
                 $exist = true;
                 break;
             }
         }
         return $exist;
     }
+   /*
+        conflict with Helix Ultimate Template
+        CG AVIF plugin has to be done before Helix system plugin
+        If not, force root url to images
+    */
+    private function checkTemplate()
+    {
+        $app = Factory::getApplication();
+        $template = $app->getTemplate();
+        $template_params = $app->getTemplate('params');
+        $lazy = $template_params->params->get('image_lazy_loading', '0');
+        if (($template == "shaper_helixultimate") &&
+            ($lazy == "1")) {
+            $this->forceurl = true;
+        }
+        if (!$this->forceurl) {// no helix and/or lazyload
+            return;
+        }
+
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(true)
+        ->select($db->quoteName('element'), $db->quoteName('ordering'))
+        ->from($db->quoteName('#__extensions'))
+        ->where(
+            [
+                $db->quoteName('enabled') . ' = 1',
+                $db->quoteName('type') . ' = ' . $db->quote('plugin'),
+                $db->quoteName('folder') . ' = ' . $db->quote('system'),
+                $db->quoteName('element') . ' IN ("helixultimate","cgavif")',
+            ]
+        )
+        ->order($db->quoteName('ordering'));
+        $db->setQuery($query);
+
+        $results = $db->loadObjectList();
+        if (sizeof($results) < 2) { // no Helix plugin
+            return;
+        }
+        foreach ($results as $result) {
+            $last = $result->element;
+        }
+        if ($last == "cgavif") {
+            $this->forceurl = false;
+        }
+    }
 
     private function imgToAVIF($image, $quality = 100, $excluded = array(), $stored_time = 5, $regexPath = '', $fullRegex = '', &$debugTarget = [])
     {
-        if (strpos($image,'%20')) { // filenames with %20 : JCE replaces spaces by %20, let's change this 
-            $image = str_replace('%20',' ',$image);
+        if (strpos($image,'%20')) { // filenames with %20 : JCE replaces spaces by %20, let's change this
+            $image = str_replace('%20', ' ', $image);
         }
         $imgPath = JPATH_ROOT . '/' . $image;
         $imgInfo = pathinfo($imgPath);
         $imgHash = md5($imgPath);
         $bNew    = 'false';
 
-        if(!isset($imgInfo['extension']) || !$imgInfo['extension']) {
+        if (!isset($imgInfo['extension']) || !$imgInfo['extension']) {
             return 'extension';
         }
 
-        if(count($excluded)) {
-            if(in_array($image, $excluded) || $this->isExcludedDirectory($image, $excluded)) {
+        if (count($excluded)) {
+            if (in_array($image, $excluded) || $this->isExcludedDirectory($image, $excluded)) {
                 return 'excluded';
             }
         }
         if (str_starts_with($image, '#')) { // media manager image part : ignore it
             return 'ignored';
         }
-        if(is_file($imgPath)) {
+        if (is_file($imgPath)) {
             if (!isset($this->_avifs[$imgHash])) {
                 if ($this->params->get('storage', 'same') == "same") { // same as original image
                     $newImagePath = $imgInfo['dirname'] . '/';
@@ -189,7 +235,7 @@ final class Cgavif extends CMSPlugin implements SubscriberInterface
                 if (is_file($newImage)) {
                     $imgCreated = filemtime($imgPath);
                     $fileCreated = filemtime($newImage);
-                    if($fileCreated < $imgCreated) {
+                    if ($fileCreated < $imgCreated) {
                         File::delete($newImage);
                     }
                 }
@@ -218,6 +264,11 @@ final class Cgavif extends CMSPlugin implements SubscriberInterface
                     }
                 }
                 $newFile = str_replace(JPATH_ROOT . '/', "", $newImage)."?ver=".$imgHash;
+                if (($this->params->get('storage', 'same') == "media") &&
+                    $this->forceurl) { // Helix ultimate confict : force root
+                    $newFile = URI::root() .$newFile;
+                }
+			
                 $this->_avifs[$imgHash] = $newFile;
             }
             $debugTarget[] = array(

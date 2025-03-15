@@ -2,7 +2,7 @@
 /**
  * @package		CGAvif system plugin
  * @author		ConseilGouz
- * @copyright	Copyright (C) 2024 ConseilGouz. All rights reserved.
+ * @copyright	Copyright (C) 2025 ConseilGouz. All rights reserved.
  * license      https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * From CG WEBP version 1.2.8
  **/
@@ -12,6 +12,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseInterface;
 use Joomla\String\StringHelper;
 
 // Prevent direct access
@@ -35,8 +36,7 @@ class VersionField extends FormField
 
 		$version = '';
 
-		$jinput = Factory::getApplication()->input;
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true);
 		$query
 			->select($db->quoteName('manifest_cache'))
@@ -47,12 +47,12 @@ class VersionField extends FormField
 		$tmp = json_decode($row['manifest_cache']);
 		$version = $tmp->version;
 		
-		$document = Factory::getDocument();
+		$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 		$css = '';
 		$css .= ".version {display:block;text-align:right;color:brown;font-size:10px;}";
 		$css .= ".readonly.plg-desc {font-weight:normal;}";
 		$css .= "fieldset.radio label {width:auto;}";
-		$document->addStyleDeclaration($css);
+		$wa->addInlineStyle($css);
 		$margintop = $this->def('margintop');
 		if (StringHelper::strlen($margintop)) {
 			$js = "document.addEventListener('DOMContentLoaded', function() {
@@ -60,7 +60,7 @@ class VersionField extends FormField
 			parent = vers.parentElement.parentElement;
 			parent.style.marginTop = '".$margintop."';
 			})";
-			$document->addScriptDeclaration($js);
+			$wa->addInlineScript($js);
 		}
 		$return .= '<span class="version">' . Text::_('JVERSION') . ' ' . $version . "</span>";
 

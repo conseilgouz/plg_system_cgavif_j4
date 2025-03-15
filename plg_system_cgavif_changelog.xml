@@ -3,6 +3,19 @@
 		<element>plg_system_cgavif</element>
 		<type>plugin</type>
 		<group>system</group>
+		<version>1.1.0</version>
+        <note>
+            <item>Update : 15/03/2025</item>
+        </note>
+        <fix>
+            <item>VersionField : use WebAssets, replace getDbo</item>
+            <item>CGRangeField dark mode</item>
+        </fix>
+	</changelog>
+	<changelog>
+		<element>plg_system_cgavif</element>
+		<type>plugin</type>
+		<group>system</group>
 		<version>1.0.0</version>
         <note>
             <item>Update : 06/10/2024</item>

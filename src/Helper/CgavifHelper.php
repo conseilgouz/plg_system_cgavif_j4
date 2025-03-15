@@ -2,12 +2,12 @@
 /**
  * @package		CGAvif system plugin
  * @author		ConseilGouz
- * @copyright	Copyright (C) 2024 ConseilGouz. All rights reserved.
+ * @copyright	Copyright (C) 2025 ConseilGouz. All rights reserved.
  * license      https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * From CG WEBP version 1.2.8
  **/
 
-namespace ConseilGouz\Plugin\System\Cgavif\Helper;
+namespace Conseilgouz\Plugin\System\Cgavif\Helper;
 
 // Prevent direct access
 defined('_JEXEC') or die;
@@ -35,7 +35,9 @@ class CgavifHelper {
 
         // If browser doesnt support AVIF
         if (isset($_SERVER['HTTP_ACCEPT'])) {
-            if (!strpos($_SERVER['HTTP_ACCEPT'], 'image/avif' )) {
+            if (strpos($user_agent, 'Firefox') && strpos($_SERVER['HTTP_ACCEPT'], '*/*')) {
+                return true;
+            } elseif (!strpos($_SERVER['HTTP_ACCEPT'], 'image/avif' )) {
                 return false;
             }
         }
